@@ -1,47 +1,84 @@
 #include<iostream>
 #include<map>
+#include<string>
+#include<vector>
+#include<ctime>
+
 using namespace std;
-template <class T1,class T2>
-void printMap(map<T1,T2>&m){
-   typename std::map<T1,T2>::iterator it;//由于使用的是gcc编译器，故而需要在前面加typename
-    for(it=m.begin();it!=m.end();++it){
-        cout<<" key= "<<it->first<<" value= "<<m[it->first];//it->second;
-    }
-    cout<<endl;
+
+#define art 0
+#define plan 1
+#define research 2
+class staff{
+public:
+	string mName;
+	int mSalary;//10000~19999
+} ;    
+
+//创建员工
+void createStaff(vector<staff>& cStaff)
+{
+	string nameSet="ABCDEFGHIJ";
+	for(int i=0;i<10;i++)
+	{
+		staff staffO;
+		staffO.mName="员工"+nameSet[i];
+		staffO.mName+nameSet[i];
+		staffO.mSalary=rand()%10000+10000;
+		//将员工放到容器中
+		cStaff.push_back(staffO);
+	}
 }
-void test(){
-   	//插入
-	map<int, int> m;
-	//第一种插入方式
-	m.insert(pair<int, int>(1, 10));
-	//第二种插入方式
-	m.insert(make_pair(2, 20));
-	//第三种插入方式
-	m.insert(map<int, int>::value_type(3, 30));
-	//第四种插入方式，不建议,因为会创建一个新的键(默认值为0），但是可以用于[]访问
-	m[4] = 40; 
-	printMap(m);//自动类型推导
-
-	//删除
-	m.erase(m.begin());
-	printMap(m);
-
-	m.erase(3);
-	printMap(m);
-
-	//清空
-	m.erase(m.begin(),m.end());
-	m.clear();
-	printMap(m);
-
+//random allocation
+void setGroup(vector<staff>& cStaff,multimap<int,staff> &m){
+	for(vector<staff>::iterator it=cStaff.begin();it!=cStaff.end();it++){
+		
+		int set=rand()%3;
+		m.insert(make_pair(set,*it));
+	}
 }
-void test2(){
+void showGroup(multimap<int,staff> &m){
+	cout << "策划部门: " << endl;
+	multimap<int,staff>::iterator pos=m.find(plan);
+	int count=m.count(plan);
+	int index=0;
+	for(;pos!=m.end()&&index<count;pos++,index++){
+		cout<<" name:"<<pos->second.mName<<" salary:"<<pos->second.mSalary<<endl;
+	}
+	
 
+	cout << "----------------------" << endl;
+	cout << "美术部门： " << endl;
+	 pos=m.find(art);
+	 count=m.count(art);
+	 index=0;
+	for(;pos!=m.end()&&index<count;pos++,index++){
+		cout<<" name: "<<pos->second.mName<<" salary: "<<pos->second.mSalary<<endl;
+	}
+
+	cout << "----------------------" << endl;
+	cout << "研发部门： " << endl;
+	 pos=m.find(research);
+	 count=m.count(research);
+	 index=0;
+	for(;pos!=m.end()&&index<count;pos++,index++){
+		cout<<" name: "<<pos->second.mName<<" salary: "<<pos->second.mSalary<<endl;
+	} 
 }
+
 int main(){
 
-    test();
-    test2();
-    getchar();
+	srand((unsigned int)time(NULL));
+	//create
+	vector<staff>vStaff;
+	createStaff(vStaff);
+
+	//allocation
+	multimap<int,staff>mStaff;
+	setGroup(vStaff,mStaff);
+
+	showGroup(mStaff);
+	
+    //getchar();
     return 0;
 }
